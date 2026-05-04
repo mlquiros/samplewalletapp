@@ -19,6 +19,9 @@ final class DashboardViewModelController {
   let model = DashboardViewModel()
   
   func reloadSession() {
+//    Keychain.shared.session = Session(
+//      username: "Matthew",
+//      token: "sample-token")
     model.session = Keychain.shared.session
   }
   
