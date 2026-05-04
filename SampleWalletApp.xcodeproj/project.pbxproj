@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2D0AE0692FA8CF6100C55AC5 /* Wallet in Frameworks */ = {isa = PBXBuildFile; productRef = 2D0AE0682FA8CF6100C55AC5 /* Wallet */; };
+		2D0AE0722FA8D54100C55AC5 /* Authentication in Frameworks */ = {isa = PBXBuildFile; productRef = 2D0AE0712FA8D54100C55AC5 /* Authentication */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D0AE0722FA8D54100C55AC5 /* Authentication in Frameworks */,
 				2D0AE0692FA8CF6100C55AC5 /* Wallet in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,6 +133,7 @@
 			name = SampleWalletApp;
 			packageProductDependencies = (
 				2D0AE0682FA8CF6100C55AC5 /* Wallet */,
+				2D0AE0712FA8D54100C55AC5 /* Authentication */,
 			);
 			productName = SampleWalletApp;
 			productReference = 2D0ADFDF2FA8696C00C55AC5 /* SampleWalletApp.app */;
@@ -216,6 +219,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				2D0AE0672FA8CF6100C55AC5 /* XCLocalSwiftPackageReference "Packages/Wallet" */,
+				2D0AE0702FA8D54100C55AC5 /* XCLocalSwiftPackageReference "Packages/Authentication" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2D0ADFE02FA8696C00C55AC5 /* Products */;
@@ -598,12 +602,20 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Wallet;
 		};
+		2D0AE0702FA8D54100C55AC5 /* XCLocalSwiftPackageReference "Packages/Authentication" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Authentication;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		2D0AE0682FA8CF6100C55AC5 /* Wallet */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Wallet;
+		};
+		2D0AE0712FA8D54100C55AC5 /* Authentication */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Authentication;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
