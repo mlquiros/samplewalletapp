@@ -7,6 +7,7 @@
 
 import Combine
 
+/// The state of the `DashboardView`.
 @MainActor
 final class DashboardViewModel: ObservableObject {
   
@@ -14,15 +15,18 @@ final class DashboardViewModel: ObservableObject {
   
 }
 
+/// Manages the state of the `DashboardView`.
 final class DashboardViewModelController {
   
   let model = DashboardViewModel()
   
   func reloadSession() {
-//    Keychain.shared.session = Session(
-//      username: "Matthew",
-//      token: "sample-token")
     model.session = Keychain.shared.session
+  }
+  
+  func logOut() {
+    Keychain.shared.session = nil
+    reloadSession()
   }
   
 }

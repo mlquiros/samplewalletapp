@@ -1,5 +1,5 @@
 //
-//  Keychain.swift
+//  Keychain+Session.swift
 //  SampleWalletApp
 //
 //  Created by Matthew L. Quiros on 4/5/26.
@@ -9,15 +9,11 @@ import Foundation
 import Security
 import OSLog
 
-final class Keychain {
+private let logger = Logger(subsystem: "SampleWalletApp", category: "Keychain")
+
+extension Keychain {
   
-  static let shared = Keychain()
-  private init() { }
-  
-  private let serviceID = "software.mlq.SampleWalletApp"
-  private let account = "userSession"
-  private let logger = Logger(subsystem: "SampleWalletApp", category: "Keychain")
-  
+  /// The session credentials of the currently authenticated user.
   var session: Session? {
     get {
       let query: [String: Any] = [

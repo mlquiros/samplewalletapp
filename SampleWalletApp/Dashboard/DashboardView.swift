@@ -24,6 +24,20 @@ struct DashboardView: View {
       } else {
         Text("No session found")
       }
+      
+      Button {
+        if viewModel.session == nil {
+          // Show login screen here.
+        } else {
+          modelController.logOut()
+        }
+      } label: {
+        Text(viewModel.session == nil ? "Log in" : "Log out")
+      }
+
     }
   }
+  
+  
+  
 }
