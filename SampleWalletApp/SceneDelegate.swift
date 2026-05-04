@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Wallet
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -20,7 +21,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     let window = UIWindow(windowScene: windowScene)
     
-    let dashboardVC = DashboardViewController(nibName: nil, bundle: nil)
+    let dashboardVC = DashboardViewController(
+      session: Keychain.shared.session?.convertToWalletType())
     let navigationController = UINavigationController(rootViewController: dashboardVC)
     window.rootViewController = navigationController
     window.makeKeyAndVisible()

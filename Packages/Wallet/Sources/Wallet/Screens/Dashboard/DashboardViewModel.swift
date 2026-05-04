@@ -13,20 +13,26 @@ final class DashboardViewModel: ObservableObject {
   
   @Published fileprivate(set) var session: Session?
   
+  fileprivate init(session: Session? = nil) {
+    self.session = session
+  }
+  
 }
 
 /// Manages the state of the `DashboardView`.
 final class DashboardViewModelController {
   
-  let model = DashboardViewModel()
+  @MainActor
+  let model: DashboardViewModel
   
-  func reloadSession() {
-    model.session = Keychain.shared.session
+  @MainActor
+  init(session: Session?) {
+    self.model = DashboardViewModel(session: session)
   }
   
+  @MainActor
   func logOut() {
-    Keychain.shared.session = nil
-    reloadSession()
+    model.session = nil
   }
   
 }

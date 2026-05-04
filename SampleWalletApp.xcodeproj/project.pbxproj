@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2D0AE0692FA8CF6100C55AC5 /* Wallet in Frameworks */ = {isa = PBXBuildFile; productRef = 2D0AE0682FA8CF6100C55AC5 /* Wallet */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2D0ADFF62FA8696C00C55AC5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D0AE0692FA8CF6100C55AC5 /* Wallet in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +130,7 @@
 			);
 			name = SampleWalletApp;
 			packageProductDependencies = (
+				2D0AE0682FA8CF6100C55AC5 /* Wallet */,
 			);
 			productName = SampleWalletApp;
 			productReference = 2D0ADFDF2FA8696C00C55AC5 /* SampleWalletApp.app */;
@@ -208,6 +214,9 @@
 			);
 			mainGroup = 2D0ADFD62FA8696C00C55AC5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2D0AE0672FA8CF6100C55AC5 /* XCLocalSwiftPackageReference "Packages/Wallet" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2D0ADFE02FA8696C00C55AC5 /* Products */;
 			projectDirPath = "";
@@ -583,6 +592,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		2D0AE0672FA8CF6100C55AC5 /* XCLocalSwiftPackageReference "Packages/Wallet" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Wallet;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2D0AE0682FA8CF6100C55AC5 /* Wallet */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Wallet;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2D0ADFD72FA8696C00C55AC5 /* Project object */;
 }

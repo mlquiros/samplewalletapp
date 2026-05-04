@@ -9,11 +9,29 @@ import UIKit
 import SwiftUI
 import Combine
 
-class DashboardViewController: UIViewController {
+/// Manages a dashboard view for the wallet of the current user.
+public final class DashboardViewController: UIViewController {
+  
+  
+  /// Creates a new view controller.
+  ///
+  /// - Parameters:
+  ///   - session: Session credentials of the currently authenticated user, or nil.
+  public init(
+    session: Session?
+  ) {
+    self.modelController = DashboardViewModelController(session: session)
+    super.init(nibName: nil, bundle: nil)
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
   
   // MARK: - Lifecycle events
   
-  override func viewDidLoad() {
+  public override func viewDidLoad() {
     super.viewDidLoad()
     
     if hostingController == nil {
@@ -24,13 +42,12 @@ class DashboardViewController: UIViewController {
   }
   
   private var hasAppearedBefore = false
-  override func viewWillAppear(_ animated: Bool) {
+  public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     
     // Perform tasks on first-time appearance.
     if hasAppearedBefore == false {
       hasAppearedBefore = true
-      modelController.reloadSession()
     }
   }
   
@@ -65,7 +82,7 @@ class DashboardViewController: UIViewController {
   
   // MARK: - View state
   
-  private lazy var modelController = DashboardViewModelController()
+  private let modelController: DashboardViewModelController
   private var model: DashboardViewModel { modelController.model }
   
   
