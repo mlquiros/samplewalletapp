@@ -21,7 +21,7 @@ final class SendMoneyViewModel: ObservableObject {
 final class SendMoneyViewModelController {
   
   let model: SendMoneyViewModel
-  let walletBalance: CurrencyAmount
+  private(set) var walletBalance: CurrencyAmount!
   let amountFormatter = CurrencyAmountFormatter()
   
   @MainActor
@@ -29,9 +29,7 @@ final class SendMoneyViewModelController {
     walletBalance: CurrencyAmount
   ) {
     model = SendMoneyViewModel()
-    self.walletBalance = walletBalance
-    // Compute initial values for the view state.
-    reloadContent()
+    self.setWalletBalance(walletBalance)
   }
   
   deinit {
@@ -43,7 +41,8 @@ final class SendMoneyViewModelController {
   // MARK: - Setting the content
   
   @MainActor
-  func reloadContent() {
+  func setWalletBalance(_ amount: CurrencyAmount) {
+    self.walletBalance = amount
     if let formattedAmount = amountFormatter.string(for: walletBalance.amount) {
       model.walletBalanceLabel = "Wallet balance: \(formattedAmount)"
     }
@@ -115,6 +114,10 @@ final class SendMoneyViewModelController {
     }
   }
   
+  
+  
+  // MARK: - Errors
+  
   private struct CurrencyMismatch: LocalizedError {
     let amountCurrencyCode: String
     let walletCurrencyCode: String
@@ -157,7 +160,7 @@ final class SendMoneyViewModelController {
   
   
   
-  // MARK: -
+  // MARK: - Submitting the form
   
   private var currentTask: Task<Void, Never>?
   
@@ -169,7 +172,7 @@ final class SendMoneyViewModelController {
     
     model.isProcessing = true
     let amountText = model.amountText
-    let walletBalance = walletBalance
+    let walletBalance = walletBalance!
     
     currentTask = Task { [weak self] in
       do {
@@ -187,6 +190,7 @@ final class SendMoneyViewModelController {
         await MainActor.run { [weak self] in
           guard let self else { return }
           model.isProcessing = false
+          self.setWalletBalance(success.walletBalance)
           completionBlock?(.success(success))
         }
       } catch {

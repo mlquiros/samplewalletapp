@@ -63,6 +63,9 @@ final class SendMoneyViewController: UIViewController {
     super.viewDidLoad()
     rootView.amountTextField.delegate = self
     setupViewModelObservations()
+    
+    // Control interactive dismissal.
+    navigationController?.presentationController?.delegate = self
   }
   
   
@@ -83,13 +86,16 @@ final class SendMoneyViewController: UIViewController {
       }
       .store(in: &observations)
     
-    // When the form starts processing, show the proper loading state.
+    // When the form starts processing, disable some views and
+    // show the proper loading state.
     model.$isProcessing
       .receive(on: DispatchQueue.main)
       .sink { [weak self] isProcessing in
         guard let self else { return }
+        
         navigationItem.leftBarButtonItem?.isEnabled = !isProcessing
         navigationItem.rightBarButtonItem?.isEnabled = !isProcessing
+        rootView.amountTextField.isEnabled = !isProcessing
         
         if isProcessing {
           rootView.progressView.startAnimating()
@@ -133,6 +139,13 @@ final class SendMoneyViewController: UIViewController {
     let hostingVC = UIHostingController(rootView: swiftUIView)
     let modal = UINavigationController(rootViewController: hostingVC)
     modal.sheetPresentationController?.detents = [.medium()]
+    
+    // If the modal is a success popup, don't let the user dismiss
+    // via swipe-down. They must tap the check button.
+    if case .success(_) = result {
+      modal.isModalInPresentation = true
+    }
+    
     present(modal, animated: true)
   }
   
@@ -172,6 +185,16 @@ extension SendMoneyViewController: UITextFieldDelegate {
       return true
     }
     return false
+  }
+  
+}
+
+extension SendMoneyViewController: UIAdaptivePresentationControllerDelegate {
+  
+  func presentationControllerShouldDismiss(
+    _ presentationController: UIPresentationController
+  ) -> Bool {
+    return model.isProcessing == false
   }
   
 }
