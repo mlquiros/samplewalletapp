@@ -49,6 +49,7 @@ public final class DashboardViewController: UIViewController {
     // Perform tasks on first-time appearance.
     if hasAppearedBefore == false {
       hasAppearedBefore = true
+      reloadContent(forSession: model.session)
     }
   }
   
@@ -117,8 +118,9 @@ public final class DashboardViewController: UIViewController {
   
   // MARK: - Reloading the session
   
-  public func setSession(_ session: Session?) {
+  public func reloadContent(forSession session: Session?) {
     modelController.setSession(session)
+    modelController.attemptFetchingWalletInfo()
   }
   
 }

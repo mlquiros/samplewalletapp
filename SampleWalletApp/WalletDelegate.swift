@@ -46,7 +46,7 @@ final class WalletDelegate: DashboardViewControllerDelegate {
     authenticationDelegate.didSucceedLogIn = {
       authVC.dismiss(animated: true) {
         let session = Keychain.shared.session?.convertToWalletType()
-        dashboardViewController.setSession(session)
+        dashboardViewController.reloadContent(forSession: session)
       }
     }
   }

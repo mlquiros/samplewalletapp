@@ -15,7 +15,6 @@ struct DashboardView: View {
   private let didTapLogin: (() -> Void)?
   private let didTapLogout: (() -> Void)?
   
-  
   init(
     modelController: DashboardViewModelController,
     didTapLogin: (() -> Void)? = nil,
@@ -30,7 +29,7 @@ struct DashboardView: View {
   var body: some View {
     VStack {
       if let session = viewModel.session {
-        Text("Hello, \(session.username)")
+        BalanceSummaryView(modelController: modelController)
       } else {
         Text("No session found")
       }
@@ -50,5 +49,52 @@ struct DashboardView: View {
   }
   
   
+  
+  
+  private struct BalanceSummaryView: View {
+    
+    let modelController: DashboardViewModelController
+    @ObservedObject private var model: DashboardViewModel
+    
+    private let amountFormatter = CurrencyAmountFormatter()
+    
+    init(modelController: DashboardViewModelController) {
+      self.modelController = modelController
+      self._model = ObservedObject(wrappedValue: modelController.model)
+    }
+    
+    var body: some View {
+      if let session = model.session {
+        Text("Hello, \(session.username)")
+      }
+      
+      HStack {
+        Text("Your balance:")
+        
+        if model.isFetchingWalletInfo {
+          ProgressView()
+        } else {
+          if model.balanceIsShowing {
+            if let balance = model.walletInfo?.balance,
+               let string = amountFormatter.string(for: balance.amount) {
+              Text(string)
+            }
+          } else {
+            Text("****")
+          }
+          
+          Button {
+            modelController.setBalanceIsShowing(!model.balanceIsShowing)
+          } label: {
+            Text(model.balanceIsShowing ? "Hide" : "Show")
+          }
+
+        }
+      }
+    }
+    
+    
+    
+  }
   
 }

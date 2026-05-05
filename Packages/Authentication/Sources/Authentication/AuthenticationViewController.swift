@@ -20,6 +20,7 @@ public final class AuthenticationViewController: UINavigationController {
   public init(
     initialView: View
   ) {
+    // Determine the root VC based on the initial view.
     let rootViewController: UIViewController
     switch initialView {
     case .login:
@@ -27,7 +28,18 @@ public final class AuthenticationViewController: UINavigationController {
     case .register:
       fatalError("Unsupported case \(String(describing: View.register)) -- not yet implemented")
     }
+    
+    // Set the root VC.
     super.init(rootViewController: rootViewController)
+    
+    // Set the delegate. Can only be done after calling super.init()
+    // since invoking `self` is required.
+    switch rootViewController {
+    case let loginVC as LoginViewController:
+      loginVC.delegate = self
+    default:
+      break
+    }
   }
   
   required init?(coder aDecoder: NSCoder) {
