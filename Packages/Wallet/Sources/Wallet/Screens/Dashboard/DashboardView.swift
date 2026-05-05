@@ -50,7 +50,7 @@ struct DashboardView: View {
   
   
   
-  
+  /// The subview that shows the current user's wallet balance.
   private struct BalanceSummaryView: View {
     
     let modelController: DashboardViewModelController
@@ -90,6 +90,10 @@ struct DashboardView: View {
           }
 
         }
+      }
+      
+      .onChange(of: model.walletInfo?.balance.currencyCode) { newValue in
+        amountFormatter.currencyCode = newValue
       }
     }
     

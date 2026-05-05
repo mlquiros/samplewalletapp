@@ -9,14 +9,15 @@ import Foundation
 
 final class CurrencyAmountFormatter: NumberFormatter {
   
-  override init() {
+  /// - Parameters:
+  ///   - currencyCode: The ISO 4217 currency code in which the amount is
+  ///     denominated, e.g. "PHP" or "USD".
+  init(currencyCode: String = "PHP") {
     super.init()
     numberStyle = .currency
     minimumFractionDigits = 2
     maximumFractionDigits = 2
-    
-    // By default, the locale is set to the Philippines.
-    locale = Locale(identifier: "en-ph")
+    self.currencyCode = currencyCode
   }
   
   required init?(coder: NSCoder) {

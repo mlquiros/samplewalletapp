@@ -9,10 +9,6 @@ import Foundation
 
 struct WalletInfo {
   
-  struct Balance {
-    let amount: Decimal
-    let iso4217CurrencyCode: String
-  }
-  let balance: Balance
+  let balance: CurrencyAmount
   
 }

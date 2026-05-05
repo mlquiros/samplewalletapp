@@ -87,7 +87,7 @@ final class DashboardViewModelController {
     try? await Task.sleep(nanoseconds: 2_000_000_000)
     // Produce the success result.
     let walletInfo = WalletInfo(
-      balance: .init(amount: 1000, iso4217CurrencyCode: "PHP"))
+      balance: .init(amount: 1000, currencyCode: "PHP"))
     return walletInfo
   }
   
