@@ -9,46 +9,76 @@ import SwiftUI
 
 struct DashboardView: View {
   
-  let modelController: DashboardViewModelController
-  @ObservedObject private var viewModel: DashboardViewModel
   
-  private let didTapLogin: (() -> Void)?
-  private let didTapLogout: (() -> Void)?
+  
+  // MARK: - State management
+  
+  let modelController: DashboardViewModelController
+  @ObservedObject private var model: DashboardViewModel
+  
+  
+  
+  // MARK: - Initialization
   
   init(
     modelController: DashboardViewModelController,
-    didTapLogin: (() -> Void)? = nil,
-    didTapLogout: (() -> Void)? = nil
+    callbacks: Callbacks = .init()
   ) {
     self.modelController = modelController
-    self._viewModel = ObservedObject(wrappedValue: modelController.model)
-    self.didTapLogin = didTapLogin
-    self.didTapLogout = didTapLogout
+    self._model = ObservedObject(wrappedValue: modelController.model)
+    self.callbacks = callbacks
   }
+  
+  
+  
+  // MARK: - Call backs
+  
+  struct Callbacks {
+    var didTapLogin: (() -> Void)?
+    var didTapLogout: (() -> Void)?
+    var didTapSendMoney: (() -> Void)?
+  }
+  
+  private let callbacks: Callbacks
+  
+  
+  
+  // MARK: - Main view body
   
   var body: some View {
     VStack {
-      if let session = viewModel.session {
+      if let session = model.session {
         BalanceSummaryView(modelController: modelController)
-      } else {
+        
+        Button {
+          callbacks.didTapSendMoney?()
+        } label: {
+          Text("Send money")
+        }
+        .disabled(model.isFetchingWalletInfo)
+      }
+      
+      else {
         Text("No session found")
       }
       
       Button {
-        if viewModel.session == nil {
-          didTapLogin?()
+        if model.session == nil {
+          callbacks.didTapLogin?()
         } else {
           modelController.setSession(nil)
-          didTapLogout?()
+          callbacks.didTapLogout?()
         }
       } label: {
-        Text(viewModel.session == nil ? "Log in" : "Log out")
+        Text(model.session == nil ? "Log in" : "Log out")
       }
 
     }
   }
   
   
+  
+  // MARK: - Subviews
   
   /// The subview that shows the current user's wallet balance.
   private struct BalanceSummaryView: View {
@@ -96,8 +126,6 @@ struct DashboardView: View {
         amountFormatter.currencyCode = newValue
       }
     }
-    
-    
     
   }
   

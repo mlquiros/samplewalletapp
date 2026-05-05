@@ -62,17 +62,29 @@ public final class DashboardViewController: UIViewController {
   private func makeHostingController() -> UIHostingController<DashboardView> {
     let view = DashboardView(
       modelController: modelController,
+      callbacks: makeDashboardViewCallbacks()
+    )
+    let hostingController = UIHostingController(rootView: view)
+    return hostingController
+  }
+  
+  private func makeDashboardViewCallbacks() -> DashboardView.Callbacks {
+    return .init(
+      
       didTapLogin: { [weak self] in
         guard let self else { return }
         self.delegate?.dashboardViewControllerDidTapLogin(self)
       },
+      
       didTapLogout: { [weak self] in
         guard let self else { return }
         self.delegate?.dashboardViewControllerDidTapLogout(self)
+      },
+      
+      didTapSendMoney: { [weak self] in
+        self?.presentSendMoneyModal()
       }
     )
-    let hostingController = UIHostingController(rootView: view)
-    return hostingController
   }
   
   private func embedHostingController(
@@ -92,10 +104,14 @@ public final class DashboardViewController: UIViewController {
   }
   
   
+  
+  
   // MARK: - View state
   
   private let modelController: DashboardViewModelController
   private var model: DashboardViewModel { modelController.model }
+  
+  
   
   
   // MARK: - Observing the view model
@@ -121,6 +137,16 @@ public final class DashboardViewController: UIViewController {
   public func reloadContent(forSession session: Session?) {
     modelController.setSession(session)
     modelController.attemptFetchingWalletInfo()
+  }
+  
+  
+  
+  // MARK: - Sending money
+  
+  private func presentSendMoneyModal() {
+    let sendMoneyVC = SendMoneyViewController()
+    let modal = UINavigationController(rootViewController: sendMoneyVC)
+    present(modal, animated: true)
   }
   
 }
