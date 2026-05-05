@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SendMoneyView" customModule="Wallet">
             <connections>
                 <outlet property="amountTextField" destination="03t-2n-gNe" id="GNk-gd-P1p"/>
+                <outlet property="walletBalanceLabel" destination="qGr-Z5-yF1" id="fba-Gn-Tcp"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>

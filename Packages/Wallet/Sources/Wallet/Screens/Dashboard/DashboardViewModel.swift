@@ -84,7 +84,7 @@ final class DashboardViewModelController {
   /// Proxy function that simulates an API call to fetch wallet info.
   private static func __proxy_fetchWalletInfo() async throws -> WalletInfo {
     // Introduce a delay to mock network latency.
-    try? await Task.sleep(nanoseconds: 2_000_000_000)
+    try await Task.sleep(nanoseconds: 2_000_000_000)
     // Produce the success result.
     let walletInfo = WalletInfo(
       balance: .init(amount: 1000, currencyCode: "PHP"))

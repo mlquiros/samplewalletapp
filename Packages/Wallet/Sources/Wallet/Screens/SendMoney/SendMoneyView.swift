@@ -9,6 +9,7 @@ import UIKit
 
 final class SendMoneyView: UIView {
   
+  @IBOutlet private(set) weak var walletBalanceLabel: UILabel!
   @IBOutlet private(set) weak var amountTextField: UITextField!
   
   override init(frame: CGRect) {

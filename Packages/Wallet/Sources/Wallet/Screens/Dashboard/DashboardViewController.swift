@@ -144,7 +144,8 @@ public final class DashboardViewController: UIViewController {
   // MARK: - Sending money
   
   private func presentSendMoneyModal() {
-    let sendMoneyVC = SendMoneyViewController()
+    guard let walletInfo = model.walletInfo else { return }
+    let sendMoneyVC = SendMoneyViewController(walletBalance: walletInfo.balance)
     let modal = UINavigationController(rootViewController: sendMoneyVC)
     present(modal, animated: true)
   }

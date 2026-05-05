@@ -13,11 +13,15 @@ let package = Package(
             targets: ["Wallet"]
         ),
     ],
+    dependencies: [
+//      .package(name: "CoreWebAPI", path: "../Packages/CoreWebAPI")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "Wallet"
+            name: "Wallet",
+//            dependencies: [.product(name: "CoreWebAPI", package: "CoreWebAPI")]
         ),
         .testTarget(
             name: "WalletTests",
