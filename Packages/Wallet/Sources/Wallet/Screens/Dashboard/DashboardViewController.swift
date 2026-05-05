@@ -12,6 +12,7 @@ import Combine
 /// Manages a dashboard view for the wallet of the current user.
 public final class DashboardViewController: UIViewController {
   
+  public weak var delegate: DashboardViewControllerDelegate?
   
   /// Creates a new view controller.
   ///
@@ -58,7 +59,17 @@ public final class DashboardViewController: UIViewController {
   private var hostingController: UIHostingController<DashboardView>?
   
   private func makeHostingController() -> UIHostingController<DashboardView> {
-    let view = DashboardView(modelController: modelController)
+    let view = DashboardView(
+      modelController: modelController,
+      didTapLogin: { [weak self] in
+        guard let self else { return }
+        self.delegate?.dashboardViewControllerDidTapLogin(self)
+      },
+      didTapLogout: { [weak self] in
+        guard let self else { return }
+        self.delegate?.dashboardViewControllerDidTapLogout(self)
+      }
+    )
     let hostingController = UIHostingController(rootView: view)
     return hostingController
   }
@@ -100,6 +111,14 @@ public final class DashboardViewController: UIViewController {
         }
       }
       .store(in: &observations)
+  }
+  
+  
+  
+  // MARK: - Reloading the session
+  
+  public func setSession(_ session: Session?) {
+    modelController.setSession(session)
   }
   
 }

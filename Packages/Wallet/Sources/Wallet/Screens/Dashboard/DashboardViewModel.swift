@@ -31,8 +31,8 @@ final class DashboardViewModelController {
   }
   
   @MainActor
-  func logOut() {
-    model.session = nil
+  func setSession(_ session: Session?) {
+    model.session = session
   }
   
 }

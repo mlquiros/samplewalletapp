@@ -12,9 +12,19 @@ struct DashboardView: View {
   let modelController: DashboardViewModelController
   @ObservedObject private var viewModel: DashboardViewModel
   
-  init(modelController: DashboardViewModelController) {
+  private let didTapLogin: (() -> Void)?
+  private let didTapLogout: (() -> Void)?
+  
+  
+  init(
+    modelController: DashboardViewModelController,
+    didTapLogin: (() -> Void)? = nil,
+    didTapLogout: (() -> Void)? = nil
+  ) {
     self.modelController = modelController
     self._viewModel = ObservedObject(wrappedValue: modelController.model)
+    self.didTapLogin = didTapLogin
+    self.didTapLogout = didTapLogout
   }
   
   var body: some View {
@@ -27,9 +37,10 @@ struct DashboardView: View {
       
       Button {
         if viewModel.session == nil {
-          // Show login screen here.
+          didTapLogin?()
         } else {
-          modelController.logOut()
+          modelController.setSession(nil)
+          didTapLogout?()
         }
       } label: {
         Text(viewModel.session == nil ? "Log in" : "Log out")

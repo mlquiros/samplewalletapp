@@ -15,15 +15,8 @@ final class LoginViewModel: ObservableObject {
   @Published fileprivate(set) var password = ""
   @Published fileprivate(set) var showsPassword = false
   
-  @Published fileprivate(set) var isProcessing = false
   @Published fileprivate(set) var error: Error?
-  
-  var loginButtonIsEnabled: Bool {
-    username.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 &&
-    password.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 &&
-    error == nil &&
-    isProcessing == false
-  }
+  @Published fileprivate(set) var isProcessing = false
   
 }
 
@@ -66,8 +59,8 @@ final class LoginViewModelController {
   
   @MainActor
   func attemptLoggingIn(
-    successBlock: (@MainActor (_ username: String, _ sessionToken: String) -> Void)? = nil,
-    failureBlock: (@MainActor (_ error: Error) -> Void)? = nil
+    successBlock: (@MainActor (_ session: Session) -> Void)? = nil
+//    failureBlock: (@MainActor (_ error: Error) -> Void)? = nil
   ) {
     guard model.isProcessing == false else { return }
     
@@ -86,14 +79,15 @@ final class LoginViewModelController {
         await MainActor.run { [weak self] in
           guard let self else { return }
           self.model.isProcessing = false
-          successBlock?(username, sessionToken)
+          self.model.error = nil
+          successBlock?(Session(username: username, token: sessionToken))
         }
       } catch {
         await MainActor.run { [weak self] in
           guard let self else { return }
           self.model.isProcessing = false
           self.model.error = error
-          failureBlock?(error)
+//          failureBlock?(error)
         }
       }
     }

@@ -34,4 +34,35 @@ public final class AuthenticationViewController: UINavigationController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  
+  
+  // MARK: - Delegation
+  
+  public weak var authenticationDelegate: AuthenticationViewControllerDelegate?
+  
+  
+  
+  
+  // MARK: - Lifecycle
+  
+  public override func viewDidLoad() {
+    super.viewDidLoad()
+  }
+  
+  
+  
+  
+}
+
+extension AuthenticationViewController: @MainActor LoginViewControllerDelegate {
+  
+  func loginViewController(
+    _ loginViewController: LoginViewController,
+    didSucceedLoginWithSession session: Session
+  ) {
+    authenticationDelegate?.authenticationViewController(
+        self, didSucceedLoggingInWithSession: session)
+  }
+  
+  
 }
