@@ -24,4 +24,16 @@ final class CurrencyAmountFormatter: NumberFormatter {
     fatalError("init(coder:) has not been implemented")
   }
   
+  
+  // MARK: - Using a shared instance
+  
+  static let shared = CurrencyAmountFormatter()
+  
+  static func shared(
+    usingCurrencyCode currencyCode: String
+  ) -> CurrencyAmountFormatter {
+    shared.currencyCode = currencyCode
+    return shared
+  }
+  
 }

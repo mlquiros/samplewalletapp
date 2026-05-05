@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SendMoneyView" customModule="Wallet">
             <connections>
                 <outlet property="amountTextField" destination="03t-2n-gNe" id="GNk-gd-P1p"/>
+                <outlet property="progressView" destination="RV2-Ol-EUZ" id="TSH-BR-4EM"/>
                 <outlet property="walletBalanceLabel" destination="qGr-Z5-yF1" id="fba-Gn-Tcp"/>
             </connections>
         </placeholder>
@@ -20,7 +21,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="uIO-ie-Znw">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="80.333333333333329"/>
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="100.33333333333333"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your balance: $" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qGr-Z5-yF1">
                             <rect key="frame" x="16" y="16" width="361" height="14.333333333333336"/>
@@ -33,6 +34,9 @@
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                         </textField>
+                        <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="RV2-Ol-EUZ">
+                            <rect key="frame" x="16" y="64.333333333333329" width="361" height="20"/>
+                        </activityIndicatorView>
                     </subviews>
                     <edgeInsets key="layoutMargins" top="16" left="16" bottom="16" right="16"/>
                 </stackView>

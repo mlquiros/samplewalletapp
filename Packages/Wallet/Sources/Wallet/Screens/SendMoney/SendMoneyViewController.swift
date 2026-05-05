@@ -32,18 +32,18 @@ final class SendMoneyViewController: UIViewController {
   
   // MARK: - Navigation items
   
-  private let submitBarButtonItem = UIBarButtonItem(
-    barButtonSystemItem: .action,
-    target: self,
-    action: #selector(handleTapOnSubmitButton))
-  
   private func initializeNavigationItem() {
     navigationItem.title = "Send money"
+    
     navigationItem.leftBarButtonItem = UIBarButtonItem(
       barButtonSystemItem: .close,
       target: self,
       action: #selector(handleTapOnCloseButton))
-    navigationItem.rightBarButtonItem = submitBarButtonItem
+    
+    navigationItem.rightBarButtonItem = UIBarButtonItem(
+      barButtonSystemItem: .action,
+      target: self,
+      action: #selector(handleTapOnSubmitButton))
   }
   
   
@@ -74,11 +74,28 @@ final class SendMoneyViewController: UIViewController {
   private var observations = Set<AnyCancellable>()
   
   private func setupViewModelObservations() {
+    // Update the wallet balance label.
     model.$walletBalanceLabel
       .receive(on: DispatchQueue.main)
       .sink { [weak self] newValue in
         guard let self else { return }
         self.rootView.walletBalanceLabel.text = newValue
+      }
+      .store(in: &observations)
+    
+    // When the form starts processing, show the proper loading state.
+    model.$isProcessing
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] isProcessing in
+        guard let self else { return }
+        navigationItem.leftBarButtonItem?.isEnabled = !isProcessing
+        navigationItem.rightBarButtonItem?.isEnabled = !isProcessing
+        
+        if isProcessing {
+          rootView.progressView.startAnimating()
+        } else {
+          rootView.progressView.stopAnimating()
+        }
       }
       .store(in: &observations)
   }
@@ -92,9 +109,10 @@ final class SendMoneyViewController: UIViewController {
   }
   
   @objc private func handleTapOnSubmitButton() {
+    view.endEditing(true)
     modelController.attemptSendingMoney(
       completionBlock: { [weak self] result in
-        self?.showSendMoneyResultModal(result: result)
+        self?.showResultModal(result: result)
       }
     )
   }
@@ -103,27 +121,34 @@ final class SendMoneyViewController: UIViewController {
   
   // MARK: -
   
-  private func showSendMoneyResultModal(
+  private func showResultModal(
     result: Result<SendMoney.Success, Error>
   ) {
     let swiftUIView = SendMoneyResultView(
       result: result,
       didTapDismiss: { [weak self] in
-        guard let self else { return }
-        switch result {
-          // If successful, dismiss all the way up to the editor.
-        case .success(_):
-          self.presentingViewController?.dismiss(animated: true)
-          // If failed, return to the send money editor.
-        case .failure(let error):
-          self.dismiss(animated: true)
-        }
+        self?.dismissResultModal(relativeTo: result)
       })
     
     let hostingVC = UIHostingController(rootView: swiftUIView)
     let modal = UINavigationController(rootViewController: hostingVC)
     modal.sheetPresentationController?.detents = [.medium()]
     present(modal, animated: true)
+  }
+  
+  private func dismissResultModal(
+    relativeTo result: Result<SendMoney.Success, Error>
+  ) {
+    switch result {
+      // If successful, dismiss all the way up to the editor.
+    case .success(_):
+      self.presentingViewController?.dismiss(animated: true)
+      
+      // If failed, return to the send money editor.
+    case .failure(let error):
+      self.dismiss(animated: true)
+      rootView.amountTextField.becomeFirstResponder()
+    }
   }
   
 }
@@ -142,8 +167,7 @@ extension SendMoneyViewController: UITextFieldDelegate {
     
     let fullText = ((textField.text ?? "") as NSString)
       .replacingCharacters(in: range, with: string)
-    if let _ = try? modelController
-      .validateCurrencyAmount(fromString: fullText) {
+    if let _ = try? modelController.validateAmountString(fullText) {
       modelController.setAmountText(fullText)
       return true
     }

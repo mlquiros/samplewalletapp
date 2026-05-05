@@ -22,10 +22,10 @@ struct SendMoneyResultView: View {
             Text("Your balance now: \(amountFormatter.string(for: success.walletBalance.amount)!)")
           
         case .failure(let error):
-          Text("Failed sending amount")
           Text(error.localizedDescription)
         }
       }
+      .padding(16)
     }
     
     .toolbar {

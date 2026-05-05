@@ -58,15 +58,14 @@ final class SendMoneyViewModelController {
   
   // MARK: - Validation: Text entry
   
-  /// Determines whether the supplied string is a valid currency amount.
+  /// Determines whether the supplied string is a valid monetary amount.
   ///
   /// - Parameters:
   ///   - string: The string to be tested.
   ///
-  /// - Returns: A `Result` containing the valid amount as a `Decimal` value,
-  /// or an `Error` explaining the failure if it is invalid.
-  func validateCurrencyAmount(
-    fromString string: String
+  /// - Returns: The amount string converted into a `Decimal`.
+  func validateAmountString(
+    _ string: String
   ) throws -> Decimal {
     let pattern = #"^(?:\d+(?:\.\d*)?|\.\d*)?$"#
     
@@ -90,16 +89,70 @@ final class SendMoneyViewModelController {
   
   // MARK: - Validation: Transaction logic
   
+  /// Determines whether the provided amount makes for a valid send money transaction.
   @discardableResult
-  func validateTransactionAmount(_ amount: Decimal) throws -> Decimal {
-    if amount <= walletBalance.amount {
-      return amount
+  func validateTransactionAmount(
+    _ amount: CurrencyAmount
+  ) throws -> CurrencyAmount {
+    
+    // Currencies must match.
+    guard amount.currencyCode == walletBalance.currencyCode else {
+      throw CurrencyMismatch(
+        amountCurrencyCode: amount.currencyCode,
+        walletCurrencyCode: walletBalance.currencyCode)
     }
-    throw InsufficientBalance()
+    
+    guard amount.amount > 0 else {
+      throw AmountMustBeGreaterThanZero(intendedAmount: amount)
+    }
+    
+    // Balance in wallet must be enough.
+    if amount.amount <= walletBalance.amount {
+      return amount
+    } else {
+      throw InsufficientBalance(
+        amountToSend: amount, walletBalance: walletBalance)
+    }
   }
   
-  struct InsufficientBalance: LocalizedError {
-    var errorDescription: String? { "Insufficient balance" }
+  private struct CurrencyMismatch: LocalizedError {
+    let amountCurrencyCode: String
+    let walletCurrencyCode: String
+    var errorDescription: String? {
+      "Currency mismatch: Sending \(amountCurrencyCode) from wallet in \(walletCurrencyCode)"
+    }
+  }
+  
+  private struct AmountMustBeGreaterThanZero: LocalizedError {
+    let intendedAmount: CurrencyAmount
+    private var formatter: CurrencyAmountFormatter {
+      .shared(usingCurrencyCode: intendedAmount.currencyCode)
+    }
+    
+    var errorDescription: String? {
+      "Cannot send \(formatter.string(for: intendedAmount.amount)!) " +
+      "-- amount must be greater than zero."
+    }
+  }
+  
+  private struct InsufficientBalance: LocalizedError {
+    
+    let amountToSend: CurrencyAmount
+    let walletBalance: CurrencyAmount
+    
+    private var formatter: CurrencyAmountFormatter {
+      .shared(usingCurrencyCode: amountToSend.currencyCode)
+    }
+    
+    init(amountToSend: CurrencyAmount, walletBalance: CurrencyAmount) {
+      self.amountToSend = amountToSend
+      self.walletBalance = walletBalance
+    }
+    
+    var errorDescription: String? {
+      "Insufficient balance. " +
+      "Sending \(formatter.string(for: amountToSend.amount)!), " +
+      "wallet only has \(formatter.string(for: walletBalance.amount)!)."}
   }
   
   
@@ -110,26 +163,24 @@ final class SendMoneyViewModelController {
   
   @MainActor
   func attemptSendingMoney(
-//    successBlock: (@MainActor (_ success: SendMoney.Success) -> Void)? = nil,
-//    failureBlock: (@MainActor (_ error: Error) -> Void)? = nil
     completionBlock: (@MainActor (_ result: Result<SendMoney.Success, Error>) -> Void)? = nil
   ) {
     guard model.isProcessing == false else { return }
     
     model.isProcessing = true
     let amountText = model.amountText
-    let currencyCode = walletBalance.currencyCode
     let walletBalance = walletBalance
     
     currentTask = Task { [weak self] in
       do {
         guard let self else { return }
-        let amount = try validateCurrencyAmount(fromString: amountText)
-        try validateTransactionAmount(amount)
+        let amount = try validateAmountString(amountText)
+        let amountToSend = CurrencyAmount(amount: amount, currencyCode: walletBalance.currencyCode)
+        try validateTransactionAmount(amountToSend)
         
         // Build request parameters and fake an API call to send the money.
         let parameters = SendMoney.Parameters(
-          amountToSend: CurrencyAmount(amount: amount, currencyCode: currencyCode),
+          amountToSend: amountToSend,
           walletBalance: walletBalance)
         let success = try await SendMoney.dataTaskSuccess(withParameters: parameters)
         
@@ -147,30 +198,6 @@ final class SendMoneyViewModelController {
       }
     }
     
-  }
-  
-  private static func __sendMoney(
-    amount: Decimal,
-    originalWalletBalance: CurrencyAmount
-  ) async throws -> SendMoney.Success {
-    
-    // Sleep to emulate an actual API call.
-    await try Task.sleep(nanoseconds: 2_000_000_000)
-    
-    // Determine the currency for the success result.
-    let currencyCode = originalWalletBalance.currencyCode
-    
-    let success = SendMoney.Success(
-      
-      // Assume that the amount sent is in the same currency as the wallet balance.
-      amountSent: CurrencyAmount(amount: amount, currencyCode: currencyCode),
-      
-      // Compute for the new wallet balance.
-      walletBalance: CurrencyAmount(
-        amount: originalWalletBalance.amount - amount,
-        currencyCode: currencyCode))
-    
-    return success
   }
   
 }

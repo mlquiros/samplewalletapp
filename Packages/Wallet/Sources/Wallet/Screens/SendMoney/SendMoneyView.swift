@@ -11,6 +11,7 @@ final class SendMoneyView: UIView {
   
   @IBOutlet private(set) weak var walletBalanceLabel: UILabel!
   @IBOutlet private(set) weak var amountTextField: UITextField!
+  @IBOutlet private(set) weak var progressView: UIActivityIndicatorView!
   
   override init(frame: CGRect) {
     super.init(frame: frame)
