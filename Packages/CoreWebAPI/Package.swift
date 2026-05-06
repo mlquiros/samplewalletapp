@@ -4,28 +4,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "Wallet",
-    platforms: [.iOS(.v15)],
+    name: "CoreWebAPI",
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "Wallet",
-            targets: ["Wallet"]
+            name: "CoreWebAPI",
+            targets: ["CoreWebAPI"]
         ),
-    ],
-    dependencies: [
-      .package(name: "CoreWebAPI", path: "../CoreWebAPI")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "Wallet",
-            dependencies: [.product(name: "CoreWebAPI", package: "CoreWebAPI")]
+            name: "CoreWebAPI"
         ),
         .testTarget(
-            name: "WalletTests",
-            dependencies: ["Wallet"]
+            name: "CoreWebAPITests",
+            dependencies: ["CoreWebAPI"]
         ),
     ],
     swiftLanguageModes: [.v6]

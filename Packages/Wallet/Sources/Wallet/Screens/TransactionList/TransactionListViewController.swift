@@ -52,6 +52,15 @@ final class TransactionListViewController: UIViewController {
     observeViewModel()
   }
   
+  private var hasAppearedBefore = false
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    if hasAppearedBefore == false {
+      hasAppearedBefore = true
+      modelController.attemptFetchingTransactions()
+    }
+  }
+  
   
   
   // MARK: - View state
@@ -66,9 +75,38 @@ final class TransactionListViewController: UIViewController {
       .receive(on: DispatchQueue.main)
       .sink { [weak self] items in
         guard let self else { return }
+        self.determineVisibleSubview()
         self.applySnapshotForCurrentViewModelItems()
       }
       .store(in: &observations)
+    
+    model.$isLoading
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        guard let self else { return }
+        self.determineVisibleSubview()
+      }
+      .store(in: &observations)
+    
+    model.$error
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] error in
+        guard let self else { return }
+        self.rootView.errorLabel.text = error?.localizedDescription
+        self.determineVisibleSubview()
+      }
+      .store(in: &observations)
+    
+  }
+  
+  private func determineVisibleSubview() {
+    if model.isLoading {
+      rootView.progressView.startAnimating()
+    } else {
+      rootView.progressView.stopAnimating()
+    }
+    rootView.collectionView.isHidden = model.isLoading || model.error != nil
+    rootView.errorLabel.isHidden = model.isLoading || model.error == nil
   }
   
   

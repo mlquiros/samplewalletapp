@@ -9,6 +9,8 @@ import UIKit
 
 final class TransactionListView: UIView {
   
+  @IBOutlet private(set) weak var progressView: UIActivityIndicatorView!
+  @IBOutlet private(set) weak var errorLabel: UILabel!
   @IBOutlet private(set) weak var collectionView: UICollectionView!
   
   override init(frame: CGRect) {
@@ -23,6 +25,7 @@ final class TransactionListView: UIView {
   
   private func initialize() {
     addViewFromNib()
+    backgroundColor = .systemBackground
   }
   
   private func addViewFromNib() {

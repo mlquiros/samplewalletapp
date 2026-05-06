@@ -46,4 +46,21 @@ final class TransactionListItemCell: UICollectionViewCell {
     view.isUserInteractionEnabled = false
   }
   
+  override func preferredLayoutAttributesFitting(
+    _ layoutAttributes: UICollectionViewLayoutAttributes
+  ) -> UICollectionViewLayoutAttributes {
+    
+    guard let attributes = layoutAttributes
+            as? UICollectionViewLayoutAttributes else {
+      return layoutAttributes
+    }
+    
+    let fittingSize = systemLayoutSizeFitting(
+      CGSizeMake(attributes.size.width, UIView.layoutFittingExpandedSize.height),
+      withHorizontalFittingPriority: .required,
+      verticalFittingPriority: .fittingSizeLevel)
+    attributes.size = fittingSize
+    return attributes
+  }
+  
 }

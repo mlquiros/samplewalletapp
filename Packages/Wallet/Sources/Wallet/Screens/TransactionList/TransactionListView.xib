@@ -4,32 +4,56 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TransactionListView" customModule="Wallet">
             <connections>
-                <outlet property="collectionView" destination="3WD-lG-y9h" id="71c-4S-Cuc"/>
+                <outlet property="collectionView" destination="f3c-Jt-blg" id="zGP-uC-8C2"/>
+                <outlet property="errorLabel" destination="ohI-Fm-6ak" id="qoO-mr-ezd"/>
+                <outlet property="progressView" destination="H75-7J-AZi" id="0el-J2-lZd"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" id="3WD-lG-y9h">
+        <view contentMode="scaleToFill" id="Zbn-6p-Oyf">
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-            <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="WS0-iD-Xi6">
-                <size key="itemSize" width="128" height="128"/>
-                <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-            </collectionViewFlowLayout>
-            <point key="canvasLocation" x="-273" y="-161"/>
-        </collectionView>
+            <subviews>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="H75-7J-AZi">
+                    <rect key="frame" x="186.66666666666666" y="441" width="20" height="20"/>
+                </activityIndicatorView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ohI-Fm-6ak">
+                    <rect key="frame" x="16" y="441" width="361" height="20.333333333333314"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="f3c-Jt-blg">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Ces-du-sZ7">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="4hh-tQ-frg"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="f3c-Jt-blg" firstAttribute="leading" secondItem="Zbn-6p-Oyf" secondAttribute="leading" id="Gg3-gH-kdM"/>
+                <constraint firstItem="ohI-Fm-6ak" firstAttribute="centerY" secondItem="Zbn-6p-Oyf" secondAttribute="centerYWithinMargins" id="QWW-xz-Iqw"/>
+                <constraint firstItem="H75-7J-AZi" firstAttribute="centerX" secondItem="4hh-tQ-frg" secondAttribute="centerX" id="SgA-xF-Fmu"/>
+                <constraint firstItem="ohI-Fm-6ak" firstAttribute="leading" secondItem="Zbn-6p-Oyf" secondAttribute="leadingMargin" id="Szr-Dp-eGe"/>
+                <constraint firstAttribute="trailing" secondItem="f3c-Jt-blg" secondAttribute="trailing" id="dPf-2C-w6T"/>
+                <constraint firstItem="H75-7J-AZi" firstAttribute="centerY" secondItem="4hh-tQ-frg" secondAttribute="centerY" id="f4o-br-Fny"/>
+                <constraint firstAttribute="bottom" secondItem="f3c-Jt-blg" secondAttribute="bottom" id="nSj-av-ATL"/>
+                <constraint firstAttribute="trailingMargin" secondItem="ohI-Fm-6ak" secondAttribute="trailing" id="pm0-Xv-SF3"/>
+                <constraint firstItem="f3c-Jt-blg" firstAttribute="top" secondItem="Zbn-6p-Oyf" secondAttribute="top" id="s2m-Ip-tH3"/>
+            </constraints>
+            <point key="canvasLocation" x="-561" y="-612"/>
+        </view>
     </objects>
-    <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-    </resources>
 </document>
