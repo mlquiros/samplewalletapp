@@ -37,6 +37,7 @@ struct DashboardView: View {
     var didTapLogin: (() -> Void)?
     var didTapLogout: (() -> Void)?
     var didTapSendMoney: (() -> Void)?
+    var didTapTransactionList: (() -> Void)?
   }
   
   private let callbacks: Callbacks
@@ -47,7 +48,10 @@ struct DashboardView: View {
   
   var body: some View {
     VStack {
+      
+      // Subviews for when there is a session.
       if let session = model.session {
+        
         BalanceSummaryView(modelController: modelController)
         
         Button {
@@ -56,12 +60,20 @@ struct DashboardView: View {
           Text("Send money")
         }
         .disabled(model.isFetchingWalletInfo)
+        
+        Button {
+          callbacks.didTapTransactionList?()
+        } label: {
+          Text("Transaction history")
+        }
       }
       
+      // Display for no session.
       else {
         Text("No session found")
       }
       
+      // Log in/out
       Button {
         if model.session == nil {
           callbacks.didTapLogin?()

@@ -125,24 +125,37 @@ final class SendMoneyViewController: UIViewController {
         // Show the result modal.
         self.showResultModal(result: result)
         
-        // Post the wallet update notification.
-        switch result {
-        case .success(let success):
-          let userInfoKey = WalletDidUpdate.userInfoKey
-          NotificationCenter.default.post(
-            name: WalletDidUpdate.notificationName,
-            object: nil,
-            userInfo: [
-              userInfoKey: WalletDidUpdate.UserInfo(
-                balance: success.walletBalance.amount,
-                currencyCode: success.walletBalance.currencyCode)
-            ])
-          
-        case .failure(_):
-          break
+        // Post the success notifications.
+        if case .success(let success) = result {
+          self.postSendMoneySuccessNotifications(success: success)
         }
+        
       }
     )
+  }
+  
+  private func postSendMoneySuccessNotifications(success: SendMoney.Success) {
+    
+    NotificationCenter.default.post(
+      name: WalletDidSendMoney.notificationName,
+      object: nil,
+      userInfo: [
+        WalletDidSendMoney.userInfoKey: WalletDidSendMoney.UserInfo(
+          amount: success.amountSent.amount,
+          currencyCode: success.amountSent.currencyCode,
+          date: Date())
+      ]
+    )
+    
+    NotificationCenter.default.post(
+      name: WalletDidUpdate.notificationName,
+      object: nil,
+      userInfo: [
+        WalletDidUpdate.userInfoKey: WalletDidUpdate.UserInfo(
+          balance: success.walletBalance.amount,
+          currencyCode: success.walletBalance.currencyCode)
+      ])
+    
   }
   
   

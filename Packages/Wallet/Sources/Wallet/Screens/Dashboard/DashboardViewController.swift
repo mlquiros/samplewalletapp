@@ -104,7 +104,12 @@ public final class DashboardViewController: UIViewController {
       
       didTapSendMoney: { [weak self] in
         self?.presentSendMoneyModal()
+      },
+      
+      didTapTransactionList: { [weak self] in
+        self?.navigateToTransactionList()
       }
+      
     )
   }
   
@@ -194,6 +199,15 @@ public final class DashboardViewController: UIViewController {
     let newBalance = CurrencyAmount(
       amount: userInfo.balance, currencyCode: userInfo.currencyCode)
     modelController.setWalletInfo(.init(balance: newBalance))
+  }
+  
+  
+  
+  // MARK: - Transaction list
+  
+  private func navigateToTransactionList() {
+    let listVC = TransactionListViewController()
+    navigationController?.pushViewController(listVC, animated: true)
   }
   
 }
