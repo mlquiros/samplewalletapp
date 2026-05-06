@@ -15,7 +15,12 @@ final class RootViewController: UINavigationController {
   init() {
     self.walletDelegate = WalletDelegate()
     let dashboardVC = DashboardViewController(
-      session: Keychain.shared.session?.convertToWalletType())
+      session: Keychain.shared.session?.convertToWalletType(),
+      walletInfo: {
+        guard let walletInfo = UserDefaults.standard.walletInfo else { return nil }
+        return .init(balance: walletInfo.balance, currencyCode: walletInfo.currencyCode)
+      }()
+    )
     dashboardVC.delegate = walletDelegate
     super.init(rootViewController: dashboardVC)
   }

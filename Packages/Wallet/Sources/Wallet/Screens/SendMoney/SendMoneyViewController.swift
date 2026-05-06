@@ -70,13 +70,14 @@ final class SendMoneyViewController: UIViewController {
   
   
   
-  // MARK: - Managing view state
+  // MARK: - View state
   
   private let modelController: SendMoneyViewModelController
   private var model: SendMoneyViewModel { modelController.model }
   private var observations = Set<AnyCancellable>()
   
   private func setupViewModelObservations() {
+    
     // Update the wallet balance label.
     model.$walletBalanceLabel
       .receive(on: DispatchQueue.main)
@@ -86,8 +87,9 @@ final class SendMoneyViewController: UIViewController {
       }
       .store(in: &observations)
     
-    // When the form starts processing, disable some views and
-    // show the proper loading state.
+    
+    // When the form is submitted, disable some views and show the
+    // proper loading state.
     model.$isProcessing
       .receive(on: DispatchQueue.main)
       .sink { [weak self] isProcessing in
@@ -118,14 +120,34 @@ final class SendMoneyViewController: UIViewController {
     view.endEditing(true)
     modelController.attemptSendingMoney(
       completionBlock: { [weak self] result in
-        self?.showResultModal(result: result)
+        guard let self else { return }
+        
+        // Show the result modal.
+        self.showResultModal(result: result)
+        
+        // Post the wallet update notification.
+        switch result {
+        case .success(let success):
+          let userInfoKey = WalletDidUpdate.userInfoKey
+          NotificationCenter.default.post(
+            name: WalletDidUpdate.notificationName,
+            object: nil,
+            userInfo: [
+              userInfoKey: WalletDidUpdate.UserInfo(
+                balance: success.walletBalance.amount,
+                currencyCode: success.walletBalance.currencyCode)
+            ])
+          
+        case .failure(_):
+          break
+        }
       }
     )
   }
   
   
   
-  // MARK: -
+  // MARK: - Result modal
   
   private func showResultModal(
     result: Result<SendMoney.Success, Error>

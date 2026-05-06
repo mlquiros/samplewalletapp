@@ -27,6 +27,8 @@ final class WalletDelegate: DashboardViewControllerDelegate {
     _ dashboardViewController: DashboardViewController
   ) {
     presentLoginModal(dashboardViewController: dashboardViewController)
+    Keychain.shared.session = nil
+    UserDefaults.standard.clearAllKeys()
   }
   
   /// Performs the work of presenting the login modal.

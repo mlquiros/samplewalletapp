@@ -14,14 +14,33 @@ public final class DashboardViewController: UIViewController {
   
   public weak var delegate: DashboardViewControllerDelegate?
   
+  public struct WalletInfo {
+    public let balance: Decimal
+    public let currencyCode: String
+    public init(balance: Decimal, currencyCode: String) {
+      self.balance = balance
+      self.currencyCode = currencyCode
+    }
+  }
+  
   /// Creates a new view controller.
   ///
   /// - Parameters:
   ///   - session: Session credentials of the currently authenticated user, or nil.
   public init(
-    session: Session?
+    session: Session?,
+    walletInfo: WalletInfo?
   ) {
-    self.modelController = DashboardViewModelController(session: session)
+    self.modelController = DashboardViewModelController(
+      session: session,
+      walletInfo: {
+        // Translate the public-facing type to the internal domain type.
+        guard let walletInfo else { return nil }
+        return .init(balance: .init(
+          amount: walletInfo.balance,
+          currencyCode: walletInfo.currencyCode))
+      }()
+    )
     super.init(nibName: nil, bundle: nil)
   }
   
@@ -40,6 +59,8 @@ public final class DashboardViewController: UIViewController {
       hostingController = vc
       embedHostingController(vc)
     }
+    
+    observeNotificationForDidUpdateWallet()
   }
   
   private var hasAppearedBefore = false
@@ -55,7 +76,7 @@ public final class DashboardViewController: UIViewController {
   
   
   
-  // MARK: - Initializing the custom root view
+  // MARK: - Hosting SwiftUI
   
   private var hostingController: UIHostingController<DashboardView>?
   
@@ -148,6 +169,31 @@ public final class DashboardViewController: UIViewController {
     let sendMoneyVC = SendMoneyViewController(walletBalance: walletInfo.balance)
     let modal = UINavigationController(rootViewController: sendMoneyVC)
     present(modal, animated: true)
+  }
+  
+  
+  
+  // MARK: - Updating wallet info
+  
+  private func observeNotificationForDidUpdateWallet() {
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleNotificationForDidUpdateWallet(_:)),
+      name: WalletDidUpdate.notificationName,
+      object: nil)
+  }
+  
+  @objc private func handleNotificationForDidUpdateWallet(_ notification: Notification) {
+    // Dig for the notification details.
+    guard notification.name == WalletDidUpdate.notificationName,
+          let userInfo = notification.userInfo?[WalletDidUpdate.userInfoKey]
+            as? WalletDidUpdate.UserInfo
+    else { return }
+    
+    // Set the new balance.
+    let newBalance = CurrencyAmount(
+      amount: userInfo.balance, currencyCode: userInfo.currencyCode)
+    modelController.setWalletInfo(.init(balance: newBalance))
   }
   
 }

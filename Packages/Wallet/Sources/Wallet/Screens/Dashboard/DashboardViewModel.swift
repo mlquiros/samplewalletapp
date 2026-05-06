@@ -5,6 +5,7 @@
 //  Created by Matthew L. Quiros on 4/5/26.
 //
 
+import Foundation
 import Combine
 
 /// The state of the `DashboardView`.
@@ -18,11 +19,12 @@ final class DashboardViewModel: ObservableObject {
   @Published fileprivate(set) var isFetchingWalletInfo = false
   @Published fileprivate(set) var error: Error?
   
-  
-  
-  
-  fileprivate init(session: Session? = nil) {
+  fileprivate init(
+    session: Session?,
+    walletInfo: WalletInfo?
+  ) {
     self.session = session
+    self.walletInfo = walletInfo
   }
   
 }
@@ -37,8 +39,11 @@ final class DashboardViewModelController {
   // MARK: - Initialization
   
   @MainActor
-  init(session: Session?) {
-    self.model = DashboardViewModel(session: session)
+  init(
+    session: Session?,
+    walletInfo: WalletInfo?
+  ) {
+    self.model = DashboardViewModel(session: session, walletInfo: walletInfo)
   }
   
   deinit {
@@ -51,13 +56,24 @@ final class DashboardViewModelController {
   @MainActor
   func setSession(_ session: Session?) {
     model.session = session
+    if session == nil {
+      model.walletInfo = nil
+    }
   }
   
   
-  // MARK: - Fetching wallet info
+  
+  // MARK: - Wallet info
+  
+  /// Directly sets a value for the wallet info.
+  @MainActor
+  func setWalletInfo(_ walletInfo: WalletInfo?) {
+    model.walletInfo = walletInfo
+  }
   
   private var currentTask: Task<Void, Never>?
   
+  /// Fetches and sets the wallet info if there is currently no cached value.
   @MainActor
   func attemptFetchingWalletInfo() {
     guard model.isFetchingWalletInfo == false,
@@ -65,12 +81,30 @@ final class DashboardViewModelController {
     else { return }
     
     model.isFetchingWalletInfo = true
+    let cachedWalletInfo = model.walletInfo
+    
     currentTask = Task {
       do {
-        let walletInfo = try await Self.__proxy_fetchWalletInfo()
+        let parameters = GetWalletInfo.Parameters(
+          username: session.username,
+          sessionToken: session.token,
+          cachedWalletInfo: cachedWalletInfo)
+        let walletInfo = try await GetWalletInfo.dataTaskSuccess(
+          withParameters: parameters)
         await MainActor.run { [weak self] in
           guard let self else { return }
           self.showSuccess(walletInfo: walletInfo)
+          
+          // Since the wallet balance had just been updated from server,
+          // post the notification.
+          NotificationCenter.default.post(
+            name: WalletDidUpdate.notificationName,
+            object: nil,
+            userInfo: [
+              WalletDidUpdate.userInfoKey: WalletDidUpdate.UserInfo(
+                balance: walletInfo.balance.amount,
+                currencyCode: walletInfo.balance.currencyCode)
+            ])
         }
       } catch {
         await MainActor.run { [weak self] in
@@ -79,16 +113,6 @@ final class DashboardViewModelController {
         }
       }
     }
-  }
-  
-  /// Proxy function that simulates an API call to fetch wallet info.
-  private static func __proxy_fetchWalletInfo() async throws -> WalletInfo {
-    // Introduce a delay to mock network latency.
-    try await Task.sleep(nanoseconds: 2_000_000_000)
-    // Produce the success result.
-    let walletInfo = WalletInfo(
-      balance: .init(amount: 1000, currencyCode: "PHP"))
-    return walletInfo
   }
   
   @MainActor
