@@ -206,7 +206,8 @@ public final class DashboardViewController: UIViewController {
   // MARK: - Transaction list
   
   private func navigateToTransactionList() {
-    let listVC = TransactionListViewController()
+    let cachedTransactions = delegate?.cachedTransactions(for: self) ?? []
+    let listVC = TransactionListViewController(cachedTransactions: cachedTransactions)
     navigationController?.pushViewController(listVC, animated: true)
   }
   

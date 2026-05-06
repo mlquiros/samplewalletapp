@@ -15,7 +15,7 @@ final class WalletDelegate: DashboardViewControllerDelegate {
   
   
   
-  // MARK: - Logging in
+  // MARK: - Logging in/out
   
   func dashboardViewControllerDidTapLogin(
     _ dashboardViewController: DashboardViewController
@@ -50,6 +50,21 @@ final class WalletDelegate: DashboardViewControllerDelegate {
         let session = Keychain.shared.session?.convertToWalletType()
         dashboardViewController.reloadContent(forSession: session)
       }
+    }
+  }
+  
+  
+  
+  // MARK: - Cache queries
+  
+  func cachedTransactions(
+    for dashboardViewController: DashboardViewController
+  ) -> [CachedTransaction] {
+    return UserDefaults.standard.transactions.reversed().map {
+      .init(ID: $0.ID,
+            date: $0.date,
+            amount: $0.amount,
+            currencyCode: $0.currencyCode)
     }
   }
   
