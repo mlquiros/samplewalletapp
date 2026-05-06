@@ -96,7 +96,7 @@ final class TransactionListViewModelController {
         let parameters = GetFakeTransactions.Parameters(limit: 30)
         let request = try GetFakeTransactions.request(withParameters: parameters)
         let (data, response) = try await self.urlSession.data(for: request)
-        let success = try await GetFakeTransactions.success(
+        let success = try GetFakeTransactions.success(
           fromData: data, response: response)
         
         // Convert the results to transaction items and append.
